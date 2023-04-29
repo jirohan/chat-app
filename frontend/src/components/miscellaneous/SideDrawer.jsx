@@ -2,6 +2,7 @@ import { Button } from "@chakra-ui/button";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
+import { Flex } from '@chakra-ui/react'
 import {
   Menu,
   MenuButton,
@@ -77,7 +78,7 @@ function SideDrawer() {
         },
       };
 
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const { data } = await axios.get(`api/user?search=${search}`, config);
 
       setLoading(false);
       setSearchResult(data);
@@ -124,8 +125,8 @@ function SideDrawer() {
 
   return (
     <>
-      <Box
-        d="flex"
+      <Flex
+        
         justifyContent="space-between"
         alignItems="center"
         bg="white"
@@ -188,7 +189,7 @@ function SideDrawer() {
             </MenuList>
           </Menu>
         </div>
-      </Box>
+      </Flex>
 
       <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
