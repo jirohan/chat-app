@@ -168,7 +168,7 @@ const Signup = () => {
         <InputGroup size="md">
           <Input
             type={show ? "text" : "password"}
-            placeholder="Confirm password"
+            placeholder="Confirm Password"
             onChange={(e) => setConfirmpassword(e.target.value)}
           />
           <InputRightElement width="4.5rem">
@@ -190,6 +190,7 @@ const Signup = () => {
       <Button
         colorScheme="blue"
         width="100%"
+        borderRadius="50px"
         style={{ marginTop: 15 }}
         onClick={submitHandler}
         isLoading={picLoading}

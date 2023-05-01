@@ -99,6 +99,7 @@ const Login = () => {
       <Button
         colorScheme="blue"
         width="100%"
+        borderRadius="50px"
         style={{ marginTop: 15 }}
         onClick={submitHandler}
         isLoading={loading}
@@ -109,6 +110,7 @@ const Login = () => {
         variant="solid"
         colorScheme="red"
         width="100%"
+        borderRadius="50px"
         onClick={() => {
           setEmail("guest@example.com");
           setPassword("123456");
