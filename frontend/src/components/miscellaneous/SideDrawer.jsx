@@ -2,7 +2,8 @@ import { Button } from "@chakra-ui/button";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
-import { Flex } from '@chakra-ui/react'
+import { Flex } from "@chakra-ui/react";
+import { Image } from "@chakra-ui/react";
 import {
   Menu,
   MenuButton,
@@ -126,7 +127,6 @@ function SideDrawer() {
   return (
     <>
       <Flex
-        
         justifyContent="space-between"
         alignItems="center"
         bg="white"
@@ -134,6 +134,11 @@ function SideDrawer() {
         p="5px 10px 5px 10px"
         borderWidth="5px"
       >
+        
+        <Text fontSize="2xl" as="b" fontFamily="Work sans">
+        Team Collab
+        </Text>
+         {/* <Image src='./appLogo.png' alt='Dan Abramov' /> */}
         <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
           <Button variant="ghost" onClick={onOpen}>
             <i className="fas fa-search"></i>
@@ -142,9 +147,7 @@ function SideDrawer() {
             </Text>
           </Button>
         </Tooltip>
-        <Text fontSize="2xl" fontFamily="Work sans">
-          Talk-A-Tive
-        </Text>
+
         <div>
           <Menu>
             <MenuButton p={1}>
@@ -182,7 +185,7 @@ function SideDrawer() {
             </MenuButton>
             <MenuList>
               <ProfileModal user={user}>
-                <MenuItem>My Profile</MenuItem>{" "}
+                <MenuItem>My Profile</MenuItem>
               </ProfileModal>
               <MenuDivider />
               <MenuItem onClick={logoutHandler}>Logout</MenuItem>
@@ -191,7 +194,7 @@ function SideDrawer() {
         </div>
       </Flex>
 
-      <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
+      <Drawer placement="top" size={"100px"} onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
