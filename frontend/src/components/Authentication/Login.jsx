@@ -1,11 +1,15 @@
 import { Button } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
-import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
-import { VStack } from "@chakra-ui/layout";
+import { Input, InputGroup, InputRightElement, InputLeftElement } from "@chakra-ui/input";import { VStack } from "@chakra-ui/layout";
 import { useState } from "react";
-import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { BaseAxios } from "../../http/baseAxios";
+
+import { CiUser } from "react-icons/ci";
+import { AiOutlineLock } from "react-icons/ai";
+import { AiFillEye } from "react-icons/ai";
+import { AiFillEyeInvisible } from "react-icons/ai";
 
 const Login = () => {
   const [show, setShow] = useState(false);
@@ -33,19 +37,13 @@ const Login = () => {
 
     try {
       const config = {
-        baseURL: "http://localhost:4000/api/",
         headers: {
           "Content-type": "application/json",
         },
       };
 
-      const { data } = await axios.post(
-        "/user/login",
-        { email, password },
-        config
-      );
+      const { data } = await BaseAxios.post("/api/user/login", { email, password }, config);
 
-     
       toast({
         title: "Login Successful",
         status: "success",
@@ -67,50 +65,41 @@ const Login = () => {
       });
       setLoading(false);
     }
+    setEmail("")
+    setPassword("")
   };
 
   return (
-    <VStack spacing="10px">
-      <FormControl id="email" isRequired>
-        <FormLabel>Email Address</FormLabel>
-        <Input
-          value={email}
-          type="email"
-          placeholder="Enter Your Email Address"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+    <VStack spacing='20px'>
+      <FormControl id='email' isRequired>
+      <InputGroup>
+        <InputLeftElement pointerEvents="none" children={<CiUser style={{fontSize:"20px" }} />} />
+        <Input variant={"flushed"} value={email} type='email' placeholder='Enter Your Email Address' onChange={(e) => setEmail(e.target.value)} />
+        
+        </InputGroup>
       </FormControl>
-      <FormControl id="password" isRequired>
+      <FormControl id='password' isRequired>
         <FormLabel>Password</FormLabel>
-        <InputGroup size="md">
-          <Input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type={show ? "text" : "password"}
-            placeholder="Enter password"
-          />
-          <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClick}>
-              {show ? "Hide" : "Show"}
-            </Button>
+        <InputGroup size='md'>
+        <InputLeftElement pointerEvents="none" children={<AiOutlineLock style={{fontSize:"20px" }} />} />
+
+          <Input variant={"flushed"} value={password} onChange={(e) => setPassword(e.target.value)} type={show ? "text" : "password"} placeholder='Enter password' />
+          <InputRightElement onClick={handleClick} width='4.5rem' style={{fontSize:"20px"}}>
+            {
+              show ? <AiFillEyeInvisible/> : <AiFillEye />
+            }
+           
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <Button
-        colorScheme="blue"
-        width="100%"
-        borderRadius="50px"
-        style={{ marginTop: 15 }}
-        onClick={submitHandler}
-        isLoading={loading}
-      >
+      <Button bgGradient={"linear(to-r, cyan.600,pink.500)"} color={"#fff"}  width='100%' borderRadius='50px' _hover={{ bgGradient:"linear(to-r,pink.500,cyan.600)" }} style={{marginTop:"50px"}} onClick={submitHandler} isLoading={loading}>
         Login
       </Button>
       <Button
-        variant="solid"
-        colorScheme="red"
-        width="100%"
-        borderRadius="50px"
+        variant='solid'
+        colorScheme='red'
+        width='100%'
+        borderRadius='50px'
         onClick={() => {
           setEmail("guest@example.com");
           setPassword("123456");

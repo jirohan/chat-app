@@ -25,26 +25,16 @@ function Homepage() {
   }, [navigate])
 
   return (
-    <Container maxW="xl" centerContent>
-      <Flex
-        justifyContent="center"
-        p={3}
-        bg="none"
-        w="30%"
-        m="40px 0 10px 0"
-        borderRadius="lg"
-      >
-        <img src={logo} alt="logo"></img>
-      </Flex>
+    <Container maxW="xl" display="flex" alignItems={"center"} justifyContent={"center"} centerContent>
       <Box
         bg="white"
-        w="100%"
-        p={4}
-        borderRadius="20px"
-        borderWidth="1px"
-        boxShadow="1px 2px 9px #006AD3"
+        boxSize={"md"}
+        p={10}
+        h={"40rem"}
+        rounded={"md"}
+        boxShadow="lg"
       >
-        <Tabs isFitted variant="soft-rounded">
+        <Tabs isFitted pt={"2rem"} variant="soft-rounded">
           <TabList mb="1em">
             <Tab>Login</Tab>
             <Tab>Sign Up</Tab>

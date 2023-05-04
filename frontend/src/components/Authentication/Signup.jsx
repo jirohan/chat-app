@@ -1,11 +1,17 @@
 import { Button } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
-import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
+import { Input, InputGroup, InputRightElement, InputLeftElement } from "@chakra-ui/input";
 import { VStack } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
-import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { BaseAxios } from "../../http/baseAxios";
+import { CiUser } from "react-icons/ci";
+import { AiOutlineLock } from "react-icons/ai";
+import { AiFillEye } from "react-icons/ai";
+import { AiFillEyeInvisible } from "react-icons/ai";
+import { AiOutlineMail } from "react-icons/ai";
+
 
 const Signup = () => {
   const [show, setShow] = useState(false);
@@ -33,6 +39,19 @@ const Signup = () => {
       setPicLoading(false);
       return;
     }
+    if(!email.includes("@")){
+      toast({
+        title: "Invalid Email",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+
+      });
+      return;
+
+
+    }
     if (password !== confirmpassword) {
       toast({
         title: "Passwords Do Not Match",
@@ -46,13 +65,12 @@ const Signup = () => {
     console.log(name, email, password, pic);
     try {
       const config = {
-        baseURL: "http://localhost:4000/api/",
         headers: {
           "Content-type": "application/json",
         },
       };
-      const { data } = await axios.post(
-        "/user",
+      const { data } = await BaseAxios.post(
+        "/api/user",
         {
           name,
           email,
@@ -61,7 +79,7 @@ const Signup = () => {
         },
         config
       );
-    
+
       toast({
         title: "Registration Successful",
         status: "success",
@@ -73,7 +91,7 @@ const Signup = () => {
       setPicLoading(false);
       navigate("/chats");
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast({
         title: "Error Occured!",
         description: error.response.data.message,
@@ -132,69 +150,55 @@ const Signup = () => {
   };
 
   return (
-    <VStack spacing="5px">
-      <FormControl id="first-name" isRequired>
+    <VStack spacing='8px'>
+      <FormControl id='first-name' isRequired>
         <FormLabel>Name</FormLabel>
-        <Input
-          placeholder="Enter Your Name"
-          onChange={(e) => setName(e.target.value)}
-        />
+        <InputGroup>
+       <InputLeftElement pointerEvents="none" children={<CiUser style={{fontSize:"20px"}} /> }  />
+        <Input variant={"flushed"}  placeholder='Enter Your Name' onChange={(e) => setName(e.target.value)} />
+        
+        </InputGroup>
       </FormControl>
-      <FormControl id="email" isRequired>
-        <FormLabel>Email Address</FormLabel>
-        <Input
-          type="email"
-          placeholder="Enter Your Email Address"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      <FormControl id='email' isRequired>
+      <FormLabel>Email Address</FormLabel>
+        <InputGroup>
+        <InputLeftElement pointerEvents="none" children={<AiOutlineMail style={{fontSize:"20px"}} /> }  />
+        <Input variant={"flushed"} type='email' placeholder='Enter Your Email Address' onChange={(e) => setEmail(e.target.value)} />
+        
+        </InputGroup>
       </FormControl>
-      <FormControl id="password" isRequired>
+      <FormControl id='password' isRequired>
         <FormLabel>Password</FormLabel>
-        <InputGroup size="md">
-          <Input
-            type={show ? "text" : "password"}
-            placeholder="Enter Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClick}>
-              {show ? "Hide" : "Show"}
-            </Button>
+        <InputGroup size='md'>
+          <InputLeftElement pointerEvents="none" children={<AiOutlineLock style={{fontSize:"20px"}} /> } />
+          <Input variant={"flushed"}  type={show ? "text" : "password"} placeholder='Enter Password' onChange={(e) => setPassword(e.target.value)} />
+          <InputRightElement onClick={handleClick} width='4.5rem' style={{fontSize:"20px"}}>
+            {
+              show ? <AiFillEyeInvisible/> : <AiFillEye />
+            }
+           
+           
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <FormControl id="password" isRequired>
+      <FormControl id='password' isRequired>
         <FormLabel>Confirm Password</FormLabel>
-        <InputGroup size="md">
-          <Input
-            type={show ? "text" : "password"}
-            placeholder="Confirm Password"
-            onChange={(e) => setConfirmpassword(e.target.value)}
-          />
-          <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClick}>
-              {show ? "Hide" : "Show"}
-            </Button>
-          </InputRightElement>
+        <InputGroup size='md'>
+        <InputLeftElement pointerEvents="none" children={<AiOutlineLock style={{fontSize:"20px"}} /> } />
+          <Input variant={"flushed"} type={show ? "text" : "password"} placeholder='Confirm Password' onChange={(e) => setConfirmpassword(e.target.value)} />
+          <InputRightElement onClick={handleClick} width='4.5rem' style={{fontSize:"20px"}}>
+            {
+              show ? <AiFillEyeInvisible/> : <AiFillEye />
+            }
+            </InputRightElement>
+           
         </InputGroup>
       </FormControl>
-      <FormControl id="pic">
+      <FormControl id='pic'>
         <FormLabel>Upload your Picture</FormLabel>
-        <Input
-          type="file"
-          p={1.5}
-          accept="image/*"
-          onChange={(e) => postDetails(e.target.files[0])}
-        />
+        <Input variant={"flushed"} type='file' p={1.5} accept='image/*' onChange={(e) => postDetails(e.target.files[0])} />
       </FormControl>
-      <Button
-        colorScheme="blue"
-        width="100%"
-        borderRadius="50px"
-        style={{ marginTop: 15 }}
-        onClick={submitHandler}
-        isLoading={picLoading}
-      >
+      <Button bgGradient={"linear(to-r, cyan.600,pink.500)"} color={"#fff"}  width='100%' borderRadius='50px' _hover={{ bgGradient:"linear(to-r,pink.500,cyan.600)" }} style={{marginTop:"25px"}} onClick={submitHandler} isLoading={picLoading}>
         Sign Up
       </Button>
     </VStack>
