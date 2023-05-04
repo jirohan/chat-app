@@ -26,6 +26,8 @@ const Signup = () => {
   const [pic, setPic] = useState();
   const [picLoading, setPicLoading] = useState(false);
 
+  const regularexp = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+
   const submitHandler = async () => {
     setPicLoading(true);
     if (!name || !email || !password || !confirmpassword) {
@@ -52,6 +54,7 @@ const Signup = () => {
 
 
     }
+    
     if (password !== confirmpassword) {
       toast({
         title: "Passwords Do Not Match",
@@ -61,6 +64,28 @@ const Signup = () => {
         position: "bottom",
       });
       return;
+    }
+    if(password.length <6){
+      toast({
+        title: "Password is too short",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+
+    }
+    if(!regularexp.test(password)){
+      toast({
+        title: "Password should contain atleast one number and one special character",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+
     }
     console.log(name, email, password, pic);
     try {
