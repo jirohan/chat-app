@@ -158,13 +158,13 @@ function SideDrawer() {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader borderBottomWidth='1px'>Search Users</DrawerHeader>
-          <DrawerBody>
-            <Box d='flex' pb={2}>
+          <DrawerBody >
+            <Box display="flex" pb={2}>
               <Input placeholder='Search by name or email' mr={2} value={search} onChange={(e) => setSearch(e.target.value)} />
               <Button onClick={handleSearch}>Go</Button>
             </Box>
             {loading ? <ChatLoading /> : searchResult?.map((user) => <UserListItem key={user._id} user={user} handleFunction={() => accessChat(user._id)} />)}
-            {loadingChat && <Spinner ml='auto' d='flex' />}
+            {loadingChat && <Spinner ml='auto' display="flex" />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
