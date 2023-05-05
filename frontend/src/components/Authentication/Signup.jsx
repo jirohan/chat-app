@@ -1,6 +1,11 @@
 import { Button } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
-import { Input, InputGroup, InputRightElement, InputLeftElement } from "@chakra-ui/input";
+import {
+  Input,
+  InputGroup,
+  InputRightElement,
+  InputLeftElement,
+} from "@chakra-ui/input";
 import { VStack } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import { useState } from "react";
@@ -11,7 +16,6 @@ import { AiOutlineLock } from "react-icons/ai";
 import { AiFillEye } from "react-icons/ai";
 import { AiFillEyeInvisible } from "react-icons/ai";
 import { AiOutlineMail } from "react-icons/ai";
-
 
 const Signup = () => {
   const [show, setShow] = useState(false);
@@ -41,20 +45,18 @@ const Signup = () => {
       setPicLoading(false);
       return;
     }
-    if(!email.includes("@")){
+    if (!email.includes("@")) {
       toast({
         title: "Invalid Email",
         status: "warning",
         duration: 5000,
         isClosable: true,
         position: "bottom",
-
       });
+      setPicLoading(false);
       return;
-
-
     }
-    
+
     if (password !== confirmpassword) {
       toast({
         title: "Passwords Do Not Match",
@@ -63,9 +65,11 @@ const Signup = () => {
         isClosable: true,
         position: "bottom",
       });
+      setPicLoading(false);
+
       return;
     }
-    if(password.length <6){
+    if (password.length < 6) {
       toast({
         title: "Password is too short",
         status: "warning",
@@ -73,19 +77,22 @@ const Signup = () => {
         isClosable: true,
         position: "bottom",
       });
-      return;
+      setPicLoading(false);
 
+      return;
     }
-    if(!regularexp.test(password)){
+    if (!regularexp.test(password)) {
       toast({
-        title: "Password should contain atleast one number and one special character",
+        title:
+          "Password should contain atleast one number and one special character",
         status: "warning",
         duration: 5000,
         isClosable: true,
         position: "bottom",
       });
-      return;
+      setPicLoading(false);
 
+      return;
     }
     console.log(name, email, password, pic);
     try {
@@ -175,55 +182,100 @@ const Signup = () => {
   };
 
   return (
-    <VStack spacing='8px'>
-      <FormControl id='first-name' isRequired>
+    <VStack spacing="8px">
+      <FormControl id="first-name" isRequired>
         <FormLabel>Name</FormLabel>
         <InputGroup>
-       <InputLeftElement pointerEvents="none" children={<CiUser style={{fontSize:"20px"}} /> }  />
-        <Input variant={"flushed"}  placeholder='Enter Your Name' onChange={(e) => setName(e.target.value)} />
-        
+          <InputLeftElement
+            pointerEvents="none"
+            children={<CiUser style={{ fontSize: "20px" }} />}
+          />
+          <Input
+            variant={"flushed"}
+            placeholder="Enter Your Name"
+            onChange={(e) => setName(e.target.value)}
+          />
         </InputGroup>
       </FormControl>
-      <FormControl id='email' isRequired>
-      <FormLabel>Email Address</FormLabel>
+      <FormControl id="email" isRequired>
+        <FormLabel>Email Address</FormLabel>
         <InputGroup>
-        <InputLeftElement pointerEvents="none" children={<AiOutlineMail style={{fontSize:"20px"}} /> }  />
-        <Input variant={"flushed"} type='email' placeholder='Enter Your Email Address' onChange={(e) => setEmail(e.target.value)} />
-        
+          <InputLeftElement
+            pointerEvents="none"
+            children={<AiOutlineMail style={{ fontSize: "20px" }} />}
+          />
+          <Input
+            variant={"flushed"}
+            type="email"
+            placeholder="Enter Your Email Address"
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </InputGroup>
       </FormControl>
-      <FormControl id='password' isRequired>
+      <FormControl id="password" isRequired>
         <FormLabel>Password</FormLabel>
-        <InputGroup size='md'>
-          <InputLeftElement pointerEvents="none" children={<AiOutlineLock style={{fontSize:"20px"}} /> } />
-          <Input variant={"flushed"}  type={show ? "text" : "password"} placeholder='Enter Password' onChange={(e) => setPassword(e.target.value)} />
-          <InputRightElement onClick={handleClick} width='4.5rem' style={{fontSize:"20px"}}>
-            {
-              show ? <AiFillEyeInvisible/> : <AiFillEye />
-            }
-           
-           
+        <InputGroup size="md">
+          <InputLeftElement
+            pointerEvents="none"
+            children={<AiOutlineLock style={{ fontSize: "20px" }} />}
+          />
+          <Input
+            variant={"flushed"}
+            type={show ? "text" : "password"}
+            placeholder="Enter Password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <InputRightElement
+            onClick={handleClick}
+            width="4.5rem"
+            style={{ fontSize: "20px" }}
+          >
+            {show ? <AiFillEyeInvisible /> : <AiFillEye />}
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <FormControl id='password' isRequired>
+      <FormControl id="password" isRequired>
         <FormLabel>Confirm Password</FormLabel>
-        <InputGroup size='md'>
-        <InputLeftElement pointerEvents="none" children={<AiOutlineLock style={{fontSize:"20px"}} /> } />
-          <Input variant={"flushed"} type={show ? "text" : "password"} placeholder='Confirm Password' onChange={(e) => setConfirmpassword(e.target.value)} />
-          <InputRightElement onClick={handleClick} width='4.5rem' style={{fontSize:"20px"}}>
-            {
-              show ? <AiFillEyeInvisible/> : <AiFillEye />
-            }
-            </InputRightElement>
-           
+        <InputGroup size="md">
+          <InputLeftElement
+            pointerEvents="none"
+            children={<AiOutlineLock style={{ fontSize: "20px" }} />}
+          />
+          <Input
+            variant={"flushed"}
+            type={show ? "text" : "password"}
+            placeholder="Confirm Password"
+            onChange={(e) => setConfirmpassword(e.target.value)}
+          />
+          <InputRightElement
+            onClick={handleClick}
+            width="4.5rem"
+            style={{ fontSize: "20px" }}
+          >
+            {show ? <AiFillEyeInvisible /> : <AiFillEye />}
+          </InputRightElement>
         </InputGroup>
       </FormControl>
-      <FormControl id='pic'>
+      <FormControl id="pic">
         <FormLabel>Upload your Picture</FormLabel>
-        <Input variant={"flushed"} type='file' p={1.5} accept='image/*' onChange={(e) => postDetails(e.target.files[0])} />
+        <Input
+          variant={"flushed"}
+          type="file"
+          p={1.5}
+          accept="image/*"
+          onChange={(e) => postDetails(e.target.files[0])}
+        />
       </FormControl>
-      <Button bgGradient={"linear(to-r, cyan.600,pink.500)"} color={"#fff"}  width='100%' borderRadius='50px' _hover={{ bgGradient:"linear(to-r,pink.500,cyan.600)" }} style={{marginTop:"25px"}} onClick={submitHandler} isLoading={picLoading}>
+      <Button
+        bgGradient={"linear(to-r, cyan.600,pink.500)"}
+        color={"#fff"}
+        width="100%"
+        borderRadius="50px"
+        _hover={{ bgGradient: "linear(to-r,pink.500,cyan.600)" }}
+        style={{ marginTop: "25px" }}
+        onClick={submitHandler}
+        isLoading={picLoading}
+      >
         Sign Up
       </Button>
     </VStack>
