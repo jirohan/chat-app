@@ -84,7 +84,7 @@ const Login = () => {
           <Input variant={"flushed"} value={password} onChange={(e) => setPassword(e.target.value)} type={show ? "text" : "password"} placeholder='Enter password' />
           <InputRightElement onClick={handleClick} width='4.5rem' style={{fontSize:"20px"}}>
             {
-              show ? <AiFillEyeInvisible/> : <AiFillEye />
+              show ? <AiFillEye /> :   <AiFillEyeInvisible/>
             }
            
           </InputRightElement>

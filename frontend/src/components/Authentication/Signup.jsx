@@ -230,7 +230,7 @@ const Signup = () => {
             width="4.5rem"
             style={{ fontSize: "20px" }}
           >
-            {show ? <AiFillEyeInvisible /> : <AiFillEye />}
+            {show ? <AiFillEye /> : <AiFillEyeInvisible />}
           </InputRightElement>
         </InputGroup>
       </FormControl>
@@ -252,7 +252,7 @@ const Signup = () => {
             width="4.5rem"
             style={{ fontSize: "20px" }}
           >
-            {show ? <AiFillEyeInvisible /> : <AiFillEye />}
+            {show ? <AiFillEye /> :<AiFillEyeInvisible /> }
           </InputRightElement>
         </InputGroup>
       </FormControl>
