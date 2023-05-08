@@ -70,6 +70,7 @@ const Login = () => {
   return (
     <VStack spacing='20px'>
       <FormControl id='email' isRequired>
+        <FormLabel>Email</FormLabel>
       <InputGroup>
         <InputLeftElement pointerEvents="none" children={<CiUser style={{fontSize:"20px" }} />} />
         <Input variant={"flushed"} value={email} type='email' placeholder='Enter Your Email Address' onChange={(e) => setEmail(e.target.value)} />
