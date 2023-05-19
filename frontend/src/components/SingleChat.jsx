@@ -1,6 +1,9 @@
 import { FormControl } from "@chakra-ui/form-control";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { Input } from "@chakra-ui/input";
+import ReactHtmlParser from "react-html-parser";
+import { Editor } from "@tinymce/tinymce-react";
+import { useRef } from "react";
+// import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
 import { IconButton, Spinner, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -28,6 +31,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [istyping, setIsTyping] = useState(false);
   const toast = useToast();
 
+  const editorRef = useRef(null);
+  const log = () => {
+    if (editorRef.current) {
+      console.log(editorRef.current.getContent());
+    }
+  };
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -71,46 +80,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
-  useEffect(() => {
-    socket = io(ENDPOINT);
-    socket.emit("setup", user);
-    socket.on("connected", () => setSocketConnected(true));
-    socket.on("typing", () => setIsTyping(true));
-    socket.on("stop typing", () => setIsTyping(false));
-  }, []);
-
-  useEffect(() => {
-    fetchMessages();
-
-    selectedChatCompare = selectedChat;
-
-  
-  }, [selectedChat]);
-
-  useEffect(() => {
-    socket.on("message recieved", (newMessageRecieved) => {
-      if (
-        !selectedChatCompare || // if chat is not selected or doesn't match current chat
-        selectedChatCompare._id !== newMessageRecieved.chat._id
-      ) {
-        if (!notification.includes(newMessageRecieved)) {
-          setNotification([newMessageRecieved, ...notification]);
-          setFetchAgain(!fetchAgain);
-        }
-      } else {
-        setMessages([...messages, newMessageRecieved]);
-      }
-    });
-    return ()=>{
-      socket.off("message recieved")
-    }
-  },[selectedChatCompare]);
-
-  
-
   const sendMessage = async (event) => {
-    console.log("sending......");
-    if (event.key === "Enter" && newMessage) {
+    if (newMessage) {
       socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
@@ -120,23 +91,19 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           },
         };
         setNewMessage("");
+        const plainTextContent = editorRef.current.getContent();
         const { data } = await BaseAxios.post(
           "/api/message",
           {
-            content: newMessage,
-            chatId: selectedChat._id,
+            content: plainTextContent,
+            chatId: selectedChat,
           },
           config
         );
-        console.log(data)
-       
+
         socket.emit("new message", data);
         setMessages([...messages, data]);
-      
       } catch (error) {
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
         toast({
           title: "Error Occured!",
           description: "Failed to send the Message",
@@ -149,26 +116,56 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
-  const typingHandler = (e) => {
-    setNewMessage(e.target.value);
+  useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.emit("setup", user);
+    socket.on("connected", () => setSocketConnected(true));
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop typing", () => setIsTyping(false));
+  }, []);
 
-    if (!socketConnected) return;
+  useEffect(() => {
+    fetchMessages();
 
-    if (!typing) {
-      setTyping(true);
-      socket.emit("typing", selectedChat._id);
-    }
-    let lastTypingTime = new Date().getTime();
-    var timerLength = 3000;
-    setTimeout(() => {
-      var timeNow = new Date().getTime();
-      var timeDiff = timeNow - lastTypingTime;
-      if (timeDiff >= timerLength && typing) {
-        socket.emit("stop typing", selectedChat._id);
-        setTyping(false);
+    selectedChatCompare = selectedChat;
+  }, [selectedChat]);
+
+  useEffect(() => {
+    socket.on("message recieved", (newMessageRecieved) => {
+      if (
+        !selectedChatCompare ||
+        selectedChatCompare._id !== newMessageRecieved.chat._id
+      ) {
+        if (!notification.includes(newMessageRecieved)) {
+          setNotification([newMessageRecieved, ...notification]);
+          setFetchAgain(!fetchAgain);
+        }
+      } else {
+        setMessages([...messages, newMessageRecieved]);
       }
-    }, timerLength);
-  };
+    });
+  });
+
+  // const typingHandler = (e) => {
+  //   setNewMessage(e.target.value);
+
+  //   if (!socketConnected) return;
+
+  //   if (!typing) {
+  //     setTyping(true);
+  //     socket.emit("typing", selectedChat._id);
+  //   }
+  //   let lastTypingTime = new Date().getTime();
+  //   var timerLength = 3000;
+  //   setTimeout(() => {
+  //     var timeNow = new Date().getTime();
+  //     var timeDiff = timeNow - lastTypingTime;
+  //     if (timeDiff >= timerLength && typing) {
+  //       socket.emit("stop typing", selectedChat._id);
+  //       setTyping(false);
+  //     }
+  //   }, timerLength);
+  // };
 
   return (
     <>
@@ -229,7 +226,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             ) : (
               <div className="messages">
-                <ScrollableChat messages={messages} />
+                <ScrollableChat
+                  messages={messages.map((message) => ({
+                    ...message,
+                    content: ReactHtmlParser(message.content),
+                  }))}
+                />
               </div>
             )}
 
@@ -251,13 +253,59 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <></>
               )}
-              <Input
+              {/* <Input
                 variant="filled"
                 bg="#E0E0E0"
                 placeholder="Enter a message.."
                 value={newMessage}
                 onChange={typingHandler}
-              />
+              /> */}
+              <div style={{ height: "200px",width:"62.9rem", marginBottom: "-6.8rem",position:"relative", right:"1.4%" }}>
+                <Editor
+                  onInit={(evt, editor) => (editorRef.current = editor)}
+                  onEditorChange={setNewMessage}
+                  value={newMessage}
+                  init={{
+                    statusbar: "false",
+                    height: 145,
+                    menubar: false,
+                    plugins: [
+                      "advlist autolink lists link image charmap print preview anchor",
+                      "searchreplace visualblocks code fullscreen",
+                      "insertdatetime media table paste code help wordcount",
+                      "lists",
+                    ],
+                    toolbar:
+                      "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && e.shiftKey) {
+                      const selection = editorRef.current.selection;
+                      const container = selection.getNode();
+                      if (container && container.nodeName === "LI") {
+                        e.preventDefault();
+                        const parentList = container.parentNode;
+                        const listItemIndex = Array.from(
+                          parentList.children
+                        ).indexOf(container);
+                        const newListItem = document.createElement("li");
+                        newListItem.innerHTML = "<br>";
+                        parentList.insertBefore(
+                          newListItem,
+                          parentList.children[listItemIndex + 1]
+                        );
+                        editorRef.current.selection.setCursorLocation(
+                          newListItem,
+                          0
+                        );
+                      }
+                    } else if (e.key === "Enter") {
+                      e.preventDefault();
+                      sendMessage();
+                    }
+                  }}
+                />
+              </div>
             </FormControl>
           </Box>
         </>

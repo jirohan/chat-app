@@ -1,11 +1,25 @@
 import { Avatar } from "@chakra-ui/avatar";
+
+import { AiOutlineSearch } from "react-icons/ai";
 import { Button } from "@chakra-ui/button";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
-import { Menu, MenuButton, MenuDivider, MenuItem, MenuList } from "@chakra-ui/menu";
-import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay } from "@chakra-ui/modal";
+import {
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/menu";
+import {
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
+} from "@chakra-ui/modal";
 import { Flex } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/spinner";
 import { useToast } from "@chakra-ui/toast";
@@ -26,7 +40,14 @@ function SideDrawer() {
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
 
-  const { setSelectedChat, user, notification, setNotification, chats, setChats } = ChatState();
+  const {
+    setSelectedChat,
+    user,
+    notification,
+    setNotification,
+    chats,
+    setChats,
+  } = ChatState();
 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -104,25 +125,75 @@ function SideDrawer() {
 
   return (
     <>
-      <Flex justifyContent='space-between' alignItems='center' bg='white' w='100%' p='5px 10px 5px 10px' borderWidth='5px'>
-        <Text fontSize='2xl' as='b' fontFamily='Work sans'>
+      <Flex
+        justifyContent="space-between"
+        alignItems="center"
+        bg="white"
+        w="100%"
+        p="5px 10px 5px 10px"
+        borderWidth="5px"
+      >
+        <Text fontSize="2xl" as="b" fontFamily="Work sans">
           Team Collab
         </Text>
         {/* <Image src='./appLogo.png' alt='Dan Abramov' /> */}
-        <Tooltip label='Search Users to chat' hasArrow placement='bottom-end'>
+        {/* <Tooltip label='Search Users to chat' hasArrow placement='bottom-end'>
           <Button variant='ghost' onClick={onOpen}>
             <i className='fas fa-search'></i>
             <Text d={{ base: "none", md: "flex" }} px={4}>
               Search User
             </Text>
           </Button>
-        </Tooltip>
+        </Tooltip> */}
+        <div style={{display:"flex", flexDirection:"column"}}>
+          <div style={{ position: "relative" }}>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              type="text"
+              style={{
+                border: "1px solid black",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+                color: "#000",
+                width: "40rem",
+                padding: "0.3rem 0.8rem",
+                borderRadius: "20px",
+              }}
+            />
+            <AiOutlineSearch
+              onClick={handleSearch}
+              style={{
+                position: "absolute",
+                right: "15px",
+                bottom: "10px",
+                color: "#000",
+              }}
+            />
+          </div>
+          <div>
+            {loading ? (
+              <ChatLoading />
+            ) : (
+              searchResult?.map((user) => (
+                <UserListItem
+                  key={user._id}
+                  user={user}
+                  handleFunction={() => accessChat(user._id)}
+                />
+              ))
+            )}
+            {loadingChat && <Spinner ml="auto" display="flex" />}
+          </div>
+        </div>
 
         <div>
           <Menu>
             <MenuButton p={1}>
-              <NotificationBadge count={notification.length} effect={Effect.SCALE} />
-              <BellIcon fontSize='2xl' m={1} />
+              <NotificationBadge
+                count={notification.length}
+                effect={Effect.SCALE}
+              />
+              <BellIcon fontSize="2xl" m={1} />
             </MenuButton>
             <MenuList pl={2}>
               {!notification.length && "No New Messages"}
@@ -134,14 +205,22 @@ function SideDrawer() {
                     setNotification(notification.filter((n) => n !== notif));
                   }}
                 >
-                  {notif.chat.isGroupChat ? `New Message in ${notif.chat.chatName}` : `New Message from ${getSender(user, notif.chat.users)}`}
+                  {notif.chat.isGroupChat
+                    ? `New Message in ${notif.chat.chatName}`
+                    : `New Message from ${getSender(user, notif.chat.users)}`}
                 </MenuItem>
               ))}
             </MenuList>
           </Menu>
+
           <Menu>
-            <MenuButton as={Button} bg='white' rightIcon={<ChevronDownIcon />}>
-              <Avatar size='sm' cursor='pointer' name={user.name} src={user.pic} />
+            <MenuButton as={Button} bg="white" rightIcon={<ChevronDownIcon />}>
+              <Avatar
+                size="sm"
+                cursor="pointer"
+                name={user.name}
+                src={user.pic}
+              />
             </MenuButton>
             <MenuList>
               <ProfileModal user={user}>
@@ -154,7 +233,7 @@ function SideDrawer() {
         </div>
       </Flex>
 
-      <Drawer placement='top' size={"100px"} onClose={onClose} isOpen={isOpen}>
+      {/* <Drawer placement='top' size={"100px"} onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader borderBottomWidth='1px'>Search Users</DrawerHeader>
@@ -167,7 +246,7 @@ function SideDrawer() {
             {loadingChat && <Spinner ml='auto' display="flex" />}
           </DrawerBody>
         </DrawerContent>
-      </Drawer>
+      </Drawer> */}
     </>
   );
 }

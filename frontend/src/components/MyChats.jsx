@@ -1,7 +1,7 @@
 import { AddIcon } from "@chakra-ui/icons";
 import { Box, Stack, Text } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
-
+import ReactHtmlParser from "react-html-parser";
 import { Button } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { ChatState } from "../Context/ChatProvider";
@@ -38,6 +38,15 @@ const MyChats = ({ fetchAgain }) => {
       });
     }
   };
+  function formatMessage(content) {
+    // Remove unwanted tags and attributes
+    const formattedContent = content.replace(/<(\/)?[a-z]+>|<[^>]+ style="[^"]*">/gi, "");
+  
+    // Remove underline style
+    const contentWithoutUnderline = formattedContent.replace(/<u>|<\/u>/g, "");
+  
+    return contentWithoutUnderline;
+  }
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -110,12 +119,15 @@ const MyChats = ({ fetchAgain }) => {
                       : chat.chatName}
                   </Text>
                   {chat.latestMessage && (
-                    <Text fontSize="xs">
-                      <b>{chat.latestMessage.sender.name} : </b>
+                   
+                        <Text fontSize="xs">
+
+                      <b>{chat.latestMessage.sender.name}: </b>
                       {chat.latestMessage.content.length > 50
                         ? chat.latestMessage.content.substring(0, 51) + "..."
-                        : chat.latestMessage.content}
+                        : ReactHtmlParser(formatMessage(chat.latestMessage.content))}
                     </Text>
+                      
                   )}
                 </Box>
               ))}
