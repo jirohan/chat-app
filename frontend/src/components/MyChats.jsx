@@ -1,4 +1,4 @@
-import { AddIcon } from "@chakra-ui/icons";
+import { Tooltip } from "@chakra-ui/tooltip";
 import { Box, Stack, Text } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import ReactHtmlParser from "react-html-parser";
@@ -9,6 +9,8 @@ import { getSender } from "../config/ChatLogics";
 import { BaseAxios } from "../http/baseAxios";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
+
+import groupIcon from "../assets/chat-group.png";
 
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -81,13 +83,20 @@ const MyChats = ({ fetchAgain }) => {
         >
           My Chats
           <GroupChatModal>
+            <Tooltip label='Create Group' hasArrow placement='bottom-end' fontSize="0.70em" borderRadius={15}>
             <Button
+              position="relative"
               display="flex"
-              fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-              rightIcon={<AddIcon />}
+              boxShadow="1px 2px 4px rgba(0, 0, 0, 0.2)"
+              // fontSize={{ base: "17px", md: "10px", lg: "17px" }}
+              // rightIcon={<AddIcon />}
             >
-              New Group Chat
+              
+              {/* New Group Chat */}
+              <img src={groupIcon} h="45px" w="45px" position="absolute" />
+
             </Button>
+            </Tooltip>
           </GroupChatModal>
         </Box>
         <Box

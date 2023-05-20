@@ -260,7 +260,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 value={newMessage}
                 onChange={typingHandler}
               /> */}
-              <div style={{ height: "200px",width:"62.9rem", marginBottom: "-6.8rem",position:"relative", right:"1.4%" }}>
+              <div style={{ height: "200px", width:"100%", marginBottom: "-6.8rem", position:"relative" }}>
                 <Editor
                   onInit={(evt, editor) => (editorRef.current = editor)}
                   onEditorChange={setNewMessage}

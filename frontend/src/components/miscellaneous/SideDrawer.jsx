@@ -145,6 +145,7 @@ function SideDrawer() {
             </Text>
           </Button>
         </Tooltip> */}
+
         <div style={{display:"flex", flexDirection:"column"}}>
           <div style={{ position: "relative" }}>
             <input
@@ -153,9 +154,9 @@ function SideDrawer() {
               type="text"
               style={{
                 border: "1px solid black",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+                boxShadow: "1px 2px 4px rgba(0, 0, 0, 0.2)",
                 color: "#000",
-                width: "40rem",
+                width: "100%",
                 padding: "0.3rem 0.8rem",
                 borderRadius: "20px",
               }}
@@ -170,6 +171,7 @@ function SideDrawer() {
               }}
             />
           </div>
+
           <div>
             {loading ? (
               <ChatLoading />
