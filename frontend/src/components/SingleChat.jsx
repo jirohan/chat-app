@@ -3,6 +3,10 @@ import { ArrowBackIcon } from "@chakra-ui/icons";
 import ReactHtmlParser from "react-html-parser";
 import { Editor } from "@tinymce/tinymce-react";
 import { useRef } from "react";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import { BsFillMicFill, BsFillMicMuteFill } from "react-icons/bs";
+import { GrPowerReset } from "react-icons/gr";
+
 // import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
 import { IconButton, Spinner, useToast } from "@chakra-ui/react";
@@ -30,6 +34,25 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
   const toast = useToast();
+  const [speech, setSpeech] = useState(false);
+
+  const startListening = () =>{
+    SpeechRecognition.startListening({ continuous: true, language: 'en-US' });
+    setSpeech(!speech);
+  
+
+  } 
+  const stopListening = ()=>{
+    SpeechRecognition.stopListening();
+    setSpeech(!speech);
+  }
+
+    const { transcript, browserSupportsSpeechRecognition, resetTranscript } = useSpeechRecognition();
+
+    if (!browserSupportsSpeechRecognition) {
+        return null
+    }
+
 
   const editorRef = useRef(null);
   const log = () => {
@@ -146,27 +169,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     });
   });
 
-  // const typingHandler = (e) => {
-  //   setNewMessage(e.target.value);
-
-  //   if (!socketConnected) return;
-
-  //   if (!typing) {
-  //     setTyping(true);
-  //     socket.emit("typing", selectedChat._id);
-  //   }
-  //   let lastTypingTime = new Date().getTime();
-  //   var timerLength = 3000;
-  //   setTimeout(() => {
-  //     var timeNow = new Date().getTime();
-  //     var timeDiff = timeNow - lastTypingTime;
-  //     if (timeDiff >= timerLength && typing) {
-  //       socket.emit("stop typing", selectedChat._id);
-  //       setTyping(false);
-  //     }
-  //   }, timerLength);
-  // };
-
+  
   return (
     <>
       {selectedChat ? (
@@ -253,18 +256,20 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <></>
               )}
-              {/* <Input
-                variant="filled"
-                bg="#E0E0E0"
-                placeholder="Enter a message.."
-                value={newMessage}
-                onChange={typingHandler}
-              /> */}
+              
               <div style={{ height: "200px", width:"100%", marginBottom: "-6.8rem", position:"relative" }}>
+                <div className="z-10 top-3 absolute flex right-6">
+                <BsFillMicFill className="mx-2 text-2xl cursor-pointer" onClick={startListening}/>
+              <BsFillMicMuteFill className="mx-2 text-2xl cursor-pointer" onClick={stopListening} />
+              <GrPowerReset className="mx-2 text-2xl cursor-pointer" onClick={resetTranscript} />
+                </div>
+             
+
                 <Editor
+                
                   onInit={(evt, editor) => (editorRef.current = editor)}
                   onEditorChange={setNewMessage}
-                  value={newMessage}
+                  value={ speech ? transcript  : newMessage}
                   init={{
                     statusbar: "false",
                     height: 145,
