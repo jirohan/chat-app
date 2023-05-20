@@ -84,18 +84,12 @@ const MyChats = ({ fetchAgain }) => {
           My Chats
           <GroupChatModal>
             <Tooltip label='Create Group' hasArrow placement='bottom-end' fontSize="0.70em" borderRadius={15}>
-            <Button
-              position="relative"
-              display="flex"
-              boxShadow="1px 2px 4px rgba(0, 0, 0, 0.2)"
-              // fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-              // rightIcon={<AddIcon />}
-            >
+            
               
               {/* New Group Chat */}
               <img src={groupIcon} h="45px" w="45px" position="absolute" />
 
-            </Button>
+           
             </Tooltip>
           </GroupChatModal>
         </Box>
