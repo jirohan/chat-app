@@ -1,13 +1,10 @@
 import { FormControl } from "@chakra-ui/form-control";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import ReactHtmlParser from "react-html-parser";
 import { Editor } from "@tinymce/tinymce-react";
 import { useRef } from "react";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { BsFillMicFill, BsFillMicMuteFill } from "react-icons/bs";
 import { GrPowerReset } from "react-icons/gr";
-
-// import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
 import { IconButton, Spinner, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -16,6 +13,7 @@ import animationData from "../animations/typing.json";
 import { getSender, getSenderFull } from "../config/ChatLogics";
 import ScrollableChat from "./ScrollableChat";
 import ProfileModal from "./miscellaneous/ProfileModal";
+import parse from 'html-react-parser';
 import "./styles.css";
 
 import io from "socket.io-client";
@@ -35,16 +33,20 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [istyping, setIsTyping] = useState(false);
   const toast = useToast();
   const [speech, setSpeech] = useState(false);
+  const [speak, setSpeak] = useState(false);
 
   const startListening = () =>{
     SpeechRecognition.startListening({ continuous: true, language: 'en-US' });
     setSpeech(!speech);
+    setSpeak(!speak)
+
   
 
   } 
   const stopListening = ()=>{
     SpeechRecognition.stopListening();
     setSpeech(!speech);
+    setSpeak(!speak);
   }
 
     const { transcript, browserSupportsSpeechRecognition, resetTranscript } = useSpeechRecognition();
@@ -232,7 +234,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <ScrollableChat
                   messages={messages.map((message) => ({
                     ...message,
-                    content: ReactHtmlParser(message.content),
+                    content: parse(message.content),
                   }))}
                 />
               </div>
@@ -259,14 +261,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               
               <div style={{ height: "200px", width:"100%", marginBottom: "-6.8rem", position:"relative" }}>
                 <div className="z-10 top-3 absolute flex right-6">
-                <BsFillMicFill className="mx-2 text-2xl cursor-pointer" onClick={startListening}/>
-              <BsFillMicMuteFill className="mx-2 text-2xl cursor-pointer" onClick={stopListening} />
+                  {
+                    speak ? <BsFillMicMuteFill className="mx-2 text-2xl cursor-pointer" onClick={stopListening} /> :                 <BsFillMicFill className="mx-2 text-2xl cursor-pointer" onClick={startListening}/>
+
+                  }
+              
               <GrPowerReset className="mx-2 text-2xl cursor-pointer" onClick={resetTranscript} />
                 </div>
              
 
                 <Editor
-                
+                  apiKey="16e44jn217dk47joej9t1ic9p6zj5culehfg9wijnhhqo032"
                   onInit={(evt, editor) => (editorRef.current = editor)}
                   onEditorChange={setNewMessage}
                   value={ speech ? transcript  : newMessage}
