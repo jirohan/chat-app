@@ -7,7 +7,7 @@ import { BaseAxios } from "../http/baseAxios";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
 import { MdGroupAdd } from "react-icons/md";
-import parse from 'html-react-parser';
+import parse from "html-react-parser";
 
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -37,7 +37,7 @@ const MyChats = ({ fetchAgain }) => {
       });
     }
   };
-  
+
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     if (userInfo) {
@@ -106,10 +106,14 @@ const MyChats = ({ fetchAgain }) => {
                   {chat.latestMessage && (
                     <Text fontSize="xs">
                       <b>{chat.latestMessage.sender.name}: </b>
-                      {
-                        parse(
-                            chat.latestMessage.content
-                          )}
+
+                      {chat.latestMessage.content.includes("iframe") ? (
+                        <b>video</b>
+                      ) : chat.latestMessage.content.includes("img src") ? (
+                        <b>photo</b>
+                      ) : (
+                        parse(chat.latestMessage.content)
+                      )}
                     </Text>
                   )}
                 </Box>

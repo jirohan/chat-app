@@ -2,7 +2,9 @@ import { FormControl } from "@chakra-ui/form-control";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Editor } from "@tinymce/tinymce-react";
 import { useRef } from "react";
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 import { BsFillMicFill, BsFillMicMuteFill } from "react-icons/bs";
 import { GrPowerReset } from "react-icons/gr";
 import { Box, Text } from "@chakra-ui/layout";
@@ -13,7 +15,7 @@ import animationData from "../animations/typing.json";
 import { getSender, getSenderFull } from "../config/ChatLogics";
 import ScrollableChat from "./ScrollableChat";
 import ProfileModal from "./miscellaneous/ProfileModal";
-import parse from 'html-react-parser';
+import parse from "html-react-parser";
 import "./styles.css";
 
 import io from "socket.io-client";
@@ -35,26 +37,23 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [speech, setSpeech] = useState(false);
   const [speak, setSpeak] = useState(false);
 
-  const startListening = () =>{
-    SpeechRecognition.startListening({ continuous: true, language: 'en-US' });
+  const startListening = () => {
+    SpeechRecognition.startListening({ continuous: true, language: "en-US" });
     setSpeech(!speech);
-    setSpeak(!speak)
-
-  
-
-  } 
-  const stopListening = ()=>{
+    setSpeak(!speak);
+  };
+  const stopListening = () => {
     SpeechRecognition.stopListening();
     setSpeech(!speech);
     setSpeak(!speak);
+  };
+
+  const { transcript, browserSupportsSpeechRecognition, resetTranscript } =
+    useSpeechRecognition();
+
+  if (!browserSupportsSpeechRecognition) {
+    return null;
   }
-
-    const { transcript, browserSupportsSpeechRecognition, resetTranscript } = useSpeechRecognition();
-
-    if (!browserSupportsSpeechRecognition) {
-        return null
-    }
-
 
   const editorRef = useRef(null);
   const log = () => {
@@ -171,7 +170,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     });
   });
 
-  
   return (
     <>
       {selectedChat ? (
@@ -258,35 +256,47 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <></>
               )}
-              
-              <div style={{ height: "200px", width:"100%", marginBottom: "-6.8rem", position:"relative" }}>
-                <div className="z-10 top-3 absolute flex right-6">
-                  {
-                    speak ? <BsFillMicMuteFill className="mx-2 text-2xl cursor-pointer" onClick={stopListening} /> :                 <BsFillMicFill className="mx-2 text-2xl cursor-pointer" onClick={startListening}/>
 
-                  }
-              
-              <GrPowerReset className="mx-2 text-2xl cursor-pointer" onClick={resetTranscript} />
+              <div
+                style={{
+                  height: "200px",
+                  width: "100%",
+                  marginBottom: "-6.8rem",
+                  position: "relative",
+                }}
+              >
+                <div className="z-10 top-3 absolute flex right-6">
+                  {speak ? (
+                    <BsFillMicMuteFill
+                      className="mx-2 text-2xl cursor-pointer"
+                      onClick={stopListening}
+                    />
+                  ) : (
+                    <BsFillMicFill
+                      className="mx-2 text-2xl cursor-pointer"
+                      onClick={startListening}
+                    />
+                  )}
+
+                  <GrPowerReset
+                    className="mx-2 text-2xl cursor-pointer"
+                    onClick={resetTranscript}
+                  />
                 </div>
-             
 
                 <Editor
                   apiKey="16e44jn217dk47joej9t1ic9p6zj5culehfg9wijnhhqo032"
                   onInit={(evt, editor) => (editorRef.current = editor)}
                   onEditorChange={setNewMessage}
-                  value={ speech ? transcript  : newMessage}
+                  value={speech ? transcript : newMessage}
                   init={{
                     statusbar: "false",
                     height: 145,
                     menubar: false,
-                    plugins: [
-                      "advlist autolink lists link image charmap print preview anchor",
-                      "searchreplace visualblocks code fullscreen",
-                      "insertdatetime media table paste code help wordcount",
-                      "lists",
-                    ],
+                    plugins:
+                      "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode",
                     toolbar:
-                      "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+                      "fontfamily fontsize | bold italic underline | link image media mergetags | addcomment showcomments | emoticons",
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && e.shiftKey) {
