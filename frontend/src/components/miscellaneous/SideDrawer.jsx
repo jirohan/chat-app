@@ -5,6 +5,8 @@ import { useDisclosure } from "@chakra-ui/hooks";
 import { BellIcon, ChevronDownIcon, Search2Icon } from "@chakra-ui/icons";
 import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
+import { AiOutlineSearch } from "react-icons/ai";
+
 import {
   Menu,
   MenuButton,
@@ -132,25 +134,24 @@ function SideDrawer() {
         p="5px 10px 5px 10px"
         borderWidth="5px"
       >
-        
         <Text fontSize="2xl" fontFamily="Work sans">
           Team Collab
         </Text>
 
-        <Button 
-            leftIcon={<Search2Icon />} 
-            variant="outline" 
-            onClick={onOpen}
-            size="md"
-            width="40%"
-            bg="#F8F8F8"
-            boxShadow="0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 4px 10px 0 rgba(0, 0, 0, 0.10)"
-          >        
-              <i className="fas fa-search"></i>
-              <Text d={{ base: "none", md: "flex" }} px={4}>
-                Search User
-              </Text>
-          </Button>
+        <Button
+          leftIcon={<Search2Icon />}
+          variant="outline"
+          onClick={onOpen}
+          size="md"
+          width="40%"
+          bg="#F8F8F8"
+          boxShadow="0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 4px 10px 0 rgba(0, 0, 0, 0.10)"
+        >
+          <i className="fas fa-search"></i>
+          <Text d={{ base: "none", md: "flex" }} px={4}>
+            Search User
+          </Text>
+        </Button>
 
         <div>
           <Menu>
@@ -197,25 +198,27 @@ function SideDrawer() {
             </MenuList>
           </Menu>
         </div>
-        </Flex>
-
-       
+      </Flex>
 
       <Drawer placement="top" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
-        <DrawerContent w="40%" d="flex" m="auto" borderRadius="5px">
+        <DrawerContent w="30rem" display="flex" m="auto" borderRadius="5px">
           {/* <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader> */}
           <DrawerBody>
-            <Box display="flex" pb={1.1}>
+            <div className="relative">
               <Input
                 placeholder="Search by name or email"
-                w="90%"
-                m="auto"
+                w="27rem"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                style={{ zIndex: 1 }}
               />
-              <Button onClick={handleSearch} variant="ghost"><Search2Icon /></Button>
-            </Box>
+              <AiOutlineSearch
+                className="absolute right-7 bottom-2 cursor-pointer text-2xl"
+                onClick={handleSearch}
+                style={{ zIndex: 2 }}
+              />
+            </div>
             {loading ? (
               <ChatLoading />
             ) : (
@@ -223,7 +226,9 @@ function SideDrawer() {
                 <UserListItem
                   key={user._id}
                   user={user}
-                  handleFunction={() => accessChat(user._id)}
+                  handleFunction={() => {
+                    accessChat(user._id), setSearch("");
+                  }}
                 />
               ))
             )}
