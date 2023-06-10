@@ -1,6 +1,7 @@
 import { FormControl } from "@chakra-ui/form-control";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Editor } from "@tinymce/tinymce-react";
+
 import { useRef } from "react";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -16,12 +17,19 @@ import { getSender, getSenderFull } from "../config/ChatLogics";
 import ScrollableChat from "./ScrollableChat";
 import ProfileModal from "./miscellaneous/ProfileModal";
 import parse from "html-react-parser";
+import { Words } from "./words/Words";
 import "./styles.css";
+import { MdRecordVoiceOver, MdVoiceOverOff } from "react-icons/md";
 
 import io from "socket.io-client";
 import { ChatState } from "../Context/ChatProvider";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { BaseAxios } from "../http/baseAxios";
+import {
+  caesarCipher,
+  caesarDecipher,
+  replaceWordsWithAsterisks,
+} from "./encrypt/Encrypt";
 
 const ENDPOINT = "http://localhost:4000";
 var socket, selectedChatCompare;
@@ -36,6 +44,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const toast = useToast();
   const [speech, setSpeech] = useState(false);
   const [speak, setSpeak] = useState(false);
+
 
   const startListening = () => {
     SpeechRecognition.startListening({ continuous: true, language: "en-US" });
@@ -69,8 +78,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
-  const { selectedChat, setSelectedChat, user, notification, setNotification } =
+  const { selectedChat, trashTalk, setTrashTalk, setSelectedChat, user, notification, setNotification } =
     ChatState();
+
+  const handleTrashTalk = () => {
+    setTrashTalk(!trashTalk);
+  };
 
   const fetchMessages = async () => {
     if (!selectedChat) return;
@@ -119,11 +132,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         const { data } = await BaseAxios.post(
           "/api/message",
           {
-            content: plainTextContent,
+            content: caesarCipher(plainTextContent, 1234),
             chatId: selectedChat,
           },
           config
         );
+        // data.content = caesarCipher(data.content,1234)
 
         socket.emit("new message", data);
         setMessages([...messages, data]);
@@ -229,11 +243,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             ) : (
               <div className="messages">
                 <ScrollableChat
-                  messages={messages.map((message) => ({
-                    ...message,
-                    content: parse(message.content),
-                  }))}
-                />
+  messages={messages.map((message) => ({
+    ...message,
+    content: parse(
+      !trashTalk
+        ? replaceWordsWithAsterisks(caesarDecipher(message.content, 1234), Words)
+        : caesarDecipher(message.content, 1234)
+    ),
+  }))}
+/>
+
               </div>
             )}
 
@@ -277,14 +296,21 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     />
                   )}
 
-                  <GrPowerReset
-                    className="mx-2 text-2xl cursor-pointer"
-                    onClick={resetTranscript}
-                  />
+                  {!trashTalk ? (
+                    <MdVoiceOverOff
+                      onClick={handleTrashTalk}
+                      className="text-2xl ml-4 cursor-pointer"
+                    />
+                  ) : (
+                    <MdRecordVoiceOver
+                      onClick={handleTrashTalk}
+                      className="text-2xl ml-4 cursor-pointer"
+                    />
+                  )}
                 </div>
 
                 <Editor
-                  apiKey="16e44jn217dk47joej9t1ic9p6zj5culehfg9wijnhhqo032"
+                  apiKey="i5jxo89i3isqnperj0p3rz8q0yzlhib64z2s16jq26z2kxkc"
                   onInit={(evt, editor) => (editorRef.current = editor)}
                   onEditorChange={setNewMessage}
                   value={speech ? transcript : newMessage}
@@ -292,35 +318,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     statusbar: "false",
                     height: 145,
                     menubar: false,
+                    selector: "textarea",
                     plugins:
-                      "anchor preview autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode textcolor",
+                      "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount",
                     toolbar:
-                      "fontsize | bold italic underline | link image media mergetags | addcomment showcomments | forecolor export preview",
-                      setup: function (editor) {
-                        editor.ui.registry.addButton("preview", {
-                          text: "Preview",
-                          onAction: function () {
-                            editor.execCommand("mcePreview");
-                          },
-                        });
-                      },
-                      export_filename: "document", // Specify the default filename for the exported document
-                      export_formats: {
-                        pdf: {
-                          text: "Export as PDF", // Display name for the PDF export option
-                          content_style: ".mce-content-body { font-size: 14px; }", // Custom styling for the exported content
-                          file_type: "application/pdf", // File type for PDF
-                          file_extension: ".pdf", // File extension for PDF
-                        },
-                        docx: {
-                          text: "Export as DOCX", // Display name for the DOCX export option
-                          content_style: ".mce-content-body { font-size: 14px; }", // Custom styling for the exported content
-                          file_type:
-                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // File type for DOCX
-                          file_extension: ".docx", // File extension for DOCX
-                        },
-                      }
-                   
+                      "undo redo | fontsize | bold italic underline | link image media mergetags | addcomment showcomments | forecolor",
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && e.shiftKey) {
@@ -346,6 +348,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     } else if (e.key === "Enter") {
                       e.preventDefault();
                       sendMessage();
+                      resetTranscript();
                     }
                   }}
                 />

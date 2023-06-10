@@ -8,9 +8,16 @@ import {
   isSameUser,
 } from "../config/ChatLogics";
 import { ChatState } from "../Context/ChatProvider";
+import classNames from "classnames";
+import { useState } from "react";
 
 const ScrollableChat = ({ messages }) => {
+  const [show, setShow] = useState(false);
   const { user } = ChatState();
+
+  const handleClick = ()=>{
+    setShow(!show)
+  }
 
   return (
     <ScrollableFeed>
@@ -31,24 +38,23 @@ const ScrollableChat = ({ messages }) => {
               </Tooltip>
             )}
             <span
+              onClick={handleClick}
+              className={classNames({
+                "bg-[#006AFF] text-white": m.sender._id === user._id,
+                "bg-[#E4E6EB] text-black": m.sender._id !== user._id,
+              })}
               style={{
-                backgroundColor: `${
-                  m.sender._id === user._id ? "#006AFF" : "#E4E6EB"
-                }`,
-                color: `${
-                  m.sender._id === user._id ? "#fff" : "#000"
-                }`,
-              
-                
+
                 marginLeft: isSameSenderMargin(messages, m, i, user._id),
                 marginTop: isSameUser(messages, m, i, user._id) ? 3 : 10,
                 borderRadius: "20px",
-                padding: "8px 15px",
+                padding: "12px 15px",
                 maxWidth: "75%",
               }}
             >
-              {m.content}
+              <p>{m.content}</p>
             </span>
+           
           </div>
         ))}
     </ScrollableFeed>
